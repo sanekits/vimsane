@@ -1,0 +1,16 @@
+#!/bin/bash
+# vimsane-update-1
+#
+# Updates a user's configuration to vimsane v1
+#
+# Prerequisite:  the ~/.vimsane directory must exist 
+#
+# Args:  
+#      $1: version currently installed [ '0' if not previously installed ]
+#      $2: target version.  Must be >= ThisVersion.
+
+ThisVersion=1
+
+echo "Update to v$ThisVersion complete."
+true
+

@@ -1,0 +1,20 @@
+
+
+
+   v i m s a n e
+
+            <  <  - - - - - - - - 
+
+   Welcome to vimsane.
+
+   This is a customized environment for vim, the One True Editor(tm).
+
+   vimsane bundles some helpful plugins and configuration 
+   options to make vim easier to learn and use for new
+   users.
+
+   To get detailed help, press colon ':' and type VsHelp<enter>
+
+   o  Support requests should to to lmatheson4@bloomberg.net
+   o  Complaints should be sent to /dev/null
+

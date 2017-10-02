@@ -1,0 +1,71 @@
+#!/bin/bash
+# vimsane
+#
+# vimsane is a wrapper for the system's vim installation, which bundles certain
+# basic plugins and configuration options targeted toward new users.
+#
+# The general goal is to ease the entry for new vim users, get them to be more 
+# productive early on, and encourage them to migrate gradually to the traditional
+# customize-everything-yourself model.
+#
+#  Source: https://bbgithub.dev.bloomberg.com/training-domains/vimsane.git
+#
+export VimsaneVersion=1
+
+VimsaneCodeRoot=/bbsrc/training/vimsane
+VimsaneStateRoot="$HOME/.vimsane"
+
+function errExit {
+    echo "ERROR: $*" >&2
+    exit 1
+}
+
+function xstub {
+    echo "xstub: $*" >&2
+}
+
+function vimsaneUpdate {
+    local fromVer=$1
+    local toVer=$2
+    echo "Updating your vimsane state from v$fromVer to v$toVer..."
+
+    if [[ ! -x $VimsaneCodeRoot/vimsane-update-$VimsaneVersion ]] ; then
+        errExit "Can't find updater for vimsane v$VimsaneVersion"
+    fi
+    $VimsaneCodeRoot/vimsane-update-$VimsaneVersion || errExit "Failed updating vimsane to $VimsaneVersion"
+
+    echo $VimsaneVersion > $VimsaneStateRoot/version
+}
+
+function initVimsane {
+    # We keep state in ~/.vimsane/*, so we expect
+    # that to exist in the HOME dir.  This is where we create it
+    # if not there, and/or start updating the user's stuff to handle
+    # versioning.
+    #
+    
+    if [[ ! -d $VimsaneStateRoot ]]; then
+        mkdir $VimsaneStateRoot || errExit "Failed to create $VimsaneStateRoot"
+    fi
+
+    local curVersion=$(cat $VimsaneStateRoot/version 2>/dev/null)
+    if [[ ! -z $curVersion ]]; then
+        if [[ "$curVersion" == "$VimsaneVersion" ]]; then
+            true  # We're all up-to-date
+            return
+        fi
+    else
+        curVersion=0
+    fi
+    vimsaneUpdate $curVersion $VimsaneVersion
+}
+
+initVimsane
+
+echo "vimsane version $VimsaneVersion"
+cmdline="vim $*"
+echo "$cmdline"
+$cmdline
+
+
+
