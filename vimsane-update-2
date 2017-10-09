@@ -1,0 +1,18 @@
+#!/bin/bash
+# vimsane-update-1
+#
+# Updates a user's configuration to vimsane v2
+#
+# Args:  
+#      $1: version currently installed [ '0' if not previously installed ]
+#      $2: target version.  Must be >= ThisVersion.
+
+source /bbsrc/training/vimsane/vs_constants
+ThisVersion=2
+
+function errExit { 
+   echo  "ERROR: $*" >&2
+   exit 1
+}
+
+echo ""

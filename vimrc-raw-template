@@ -1,0 +1,33 @@
+" :vim filetype=vim :
+"
+"  Hello, vim world.
+"  -----------------
+"
+"  This is your new, personal ~/.vim/vimrc file. It's a place
+"  where you can put your own vim initialization settings.
+"
+"  For example, you can create commands and map keys like this:
+"
+"     command! Build set makeprg=plink\ *.mk | make | copen
+"     nmap <F5> :Build<CR>
+"
+"   This means "When I press F5, I want you to run 'plink *.mk' to build my
+"   program, and then open the errors in the quickfix window."
+"
+"  Vimsane defines many initialization settings of its own.  Those are
+"  applied first, and then your vimrc is loaded.  So you get the last word
+"  on any setting.  If you don't like something that Vimsane does, you can 
+"  undo it below, or add your own favorites.
+"
+"  You're encouraged to commit this periodically to the local git repository 
+"  for safe-keeping and sharing. (Vimsane automatically sets up a vimsane-core
+"  repository for you in your personal bbgithub account.)
+"
+
+set nocompatible
+
+" Capture the path of our own script for later refresh.
+let g:vimrc_script_path = expand('<sfile>:p')
+
+let $VIMHOME=expand('<sfile>:p:h')
+

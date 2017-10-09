@@ -9,8 +9,51 @@
 #      $1: version currently installed [ '0' if not previously installed ]
 #      $2: target version.  Must be >= ThisVersion.
 
+source /bbsrc/training/vimsane/vs_constants
 ThisVersion=1
 
-echo "Update to v$ThisVersion complete."
-true
+function errExit { 
+   echo  "ERROR: $*" >&2
+   exit 1
+}
+
+function safeInitVimrc {
+    # Context: This is called when we're not sure if they have
+    # a vimrc yet.  Vimsane treats ~/.vim/vimrc as belonging to the
+    # user, we don't ever want to damage it.  We give it "last word"
+    # during startup, so we load it last and the user can override
+    # any of the defaults in Vimsane thereby.
+    #
+    # But, we disallow ~/.vimrc altogether.  We want them to keep
+    # .vim/vimrc as their canonical init file.  If they don't like
+    # that, they can't use Vimsane.
+    #
+    # Goal: create ~/.vim/vimrc safely -- i.e. don't damage an existing
+    # version.
+    #
+    # Goal #2: if the user has a ~/.vimrc, abort -- that's not allowed.  
+    # We expect them to move their ~/.vimrc into ~/.vim/vimrc, and then 
+    # we'll be happy to help.
+
+    if [[ -f ~/.vimrc ]] || [[ -h ~/.vimrc ]]; then  # Goal #2
+        errExit "Vimsane found ~/.vimrc.  This is not allowed.  You should move it to ~/.vim/vimrc, or remove it, or just give up in despair. Vimsane is very careful to preserve your ~/.vim/vimrc, but won't play at all if you have ~/.vimrc."
+    fi
+
+    if  [[ -f ~/.vim/vimrc ]]; then
+        return # OK: there's a vimrc, and we won't step on it.
+    fi
+    mkdir -p $HOME/.vim &>/dev/null
+    cd $HOME/.vim || errExit "Unable to cd to $HOME/.vim"
+    cp $VimsaneCodeRoot/vimrc-raw-template ./vimrc || errExit "0x101"
+    echo "We created a brand-new ~/.vim/vimrc for you, because you didn't have one."
+    echo "When setup is done, you might want to look at it. That's how vim gets "
+    echo "user customizations."
+    read -p "Hit ENTER to continue."
+}
+
+if [[ -z $sourceMe ]]; then
+    safeInitVimrc
+    echo "Update to v$ThisVersion complete."
+    true
+fi
 

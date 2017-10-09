@@ -1,0 +1,8 @@
+# vs_constants
+# :vim filetype=sh :
+
+export VimsaneVersion=3  # The current 'production' version of Vimsane
+export VimsaneUserVersion=0  # The current version installed for this user
+export VimsaneStateRoot="$HOME/.vimsane"
+export VimsaneCodeRoot=/bbsrc/training/vimsane
+

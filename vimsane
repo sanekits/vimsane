@@ -1,19 +1,30 @@
 #!/bin/bash
 # vimsane
 #
-# vimsane is a wrapper for the system's vim installation, which bundles certain
-# basic plugins and configuration options targeted toward new users.
+# vimsane is a wrapper for the system's vim installation, but it adds some
+# sugar targeted toward new vim users.
 #
-# The general goal is to ease the entry for new vim users, get them to be more 
-# productive early on, and encourage them to migrate gradually to the traditional
-# customize-everything-yourself model.
+# The general goal is to serve as a vim teaching tool and buffer the student
+# from some of the opaqueness of raw vim.
+#
+#  Usage: vimsane [options] [arguments-to-vim]
+#
+#     Our options:
+#
+#     --update:  allows the vimsane start script to update the user's vim
+#       configuration.  This involves pulling a canonical source branch from
+#       bbgithub into the user's ~/.vim local repo and possibly running init
+#       scripts.  We always preserve their ~/.vim/vimrc file, but might bring
+#       in new plugins or mappings or other things they've never seen before.
+#       So it's only done on demand, we never auto-update except if vimsane is
+#       not installed at all for the user.
 #
 #  Source: https://bbgithub.dev.bloomberg.com/training-domains/vimsane.git
 #
-export VimsaneVersion=1
 
-VimsaneCodeRoot=/bbsrc/training/vimsane
-VimsaneStateRoot="$HOME/.vimsane"
+source /bbsrc/training/vimsane/vs_constants
+
+do_update=false
 
 function errExit {
     echo "ERROR: $*" >&2
@@ -21,20 +32,45 @@ function errExit {
 }
 
 function xstub {
-    echo "xstub: $*" >&2
+    echo "vimsane.xstub: $*" >&2
 }
 
 function vimsaneUpdate {
     local fromVer=$1
     local toVer=$2
-    echo "Updating your vimsane state from v$fromVer to v$toVer..."
 
-    if [[ ! -x $VimsaneCodeRoot/vimsane-update-$VimsaneVersion ]] ; then
-        errExit "Can't find updater for vimsane v$VimsaneVersion"
-    fi
-    $VimsaneCodeRoot/vimsane-update-$VimsaneVersion || errExit "Failed updating vimsane to $VimsaneVersion"
+    (( fromVer = $fromVer + 1 ))
 
-    echo $VimsaneVersion > $VimsaneStateRoot/version
+    # We sequence through each version's update script to get to 'toVer':
+    for xver in $(seq $fromVer $toVer); do
+        echo "Updating your vimsane state to v$xver ..."
+
+        if [[ ! -x $VimsaneCodeRoot/vimsane-update-${xver} ]] ; then
+            errExit "Can't find updater for vimsane v${xver}"
+        fi
+        $VimsaneCodeRoot/vimsane-update-${xver} || errExit "Failed updating vimsane to version ${xver}"
+
+        echo $xver > $VimsaneStateRoot/version
+    done
+}
+
+function prompt_update_permission {
+    local msg="You've invoked the --update option.  This may bring in new \
+features, plugins, options, mappings, and similar vimtrivia to your ~/.vim working \
+tree.  Generally this is a good thing.  Or at least harmless.  We always preserve \
+your customizations in ~/.vim/vimrc, but it is possible for you to have configured \
+your vim setup in ways that --update cannot sort out. 
+
+If that happens, we'll stop with a merge conflict or script failure, and you'll \
+have the choice to either reset your configuration to its original state, or \
+manually fix the problem to recover (a.k.a. 'expert mode'). 
+
+Hit ENTER to continue, or Ctrl+C if we've frightened you away with this message." 
+
+    local cols=$(tput cols)
+    (( cols = $cols - 8 ))
+    echo "$msg" | fold -s -w $cols
+    read 
 }
 
 function initVimsane {
@@ -50,22 +86,56 @@ function initVimsane {
 
     local curVersion=$(cat $VimsaneStateRoot/version 2>/dev/null)
     if [[ ! -z $curVersion ]]; then
+        VimsaneUserVersion=$curVersion
         if [[ "$curVersion" == "$VimsaneVersion" ]]; then
             true  # We're all up-to-date
             return
         fi
-    else
-        curVersion=0
     fi
-    vimsaneUpdate $curVersion $VimsaneVersion
+    # If we get here, then we're not running the latest version.  But we
+    # do not force people to update unless they're at version 0.  We'll
+    # alert and exit in the case of version < latest.
+    if (( $VimsaneUserVersion > 0 )) && (( $VimsaneUserVersion <   $VimsaneVersion )); then
+        echo "An update to Vimsane is available, use 'vimsane --update' to get it."
+        return
+    fi
+    # Do the update to bring them online:
+    vimsaneUpdate $VimsaneUserVersion $VimsaneVersion
 }
 
-initVimsane
+function do_update_now {
+    echo ""
+}
 
-echo "vimsane version $VimsaneVersion"
-cmdline="vim $*"
-echo "$cmdline"
-$cmdline
+if [[ -z $sourceMe ]]; then
 
+    vim_args=""  # We'll extract our args and build a list to pass on to vim
+
+    while [[ ! -z $1 ]]; do
+        case $1 in
+            --update)
+                do_update=true
+                ;;
+            *)
+                vim_args="$vim_args $1"
+                ;;
+
+        esac
+        shift
+    done
+
+    initVimsane
+
+    if $do_update; then
+        prompt_update_permission
+        do_update_now
+    fi
+
+    xstub "vimsane version $VimsaneVersion"
+    cmdline="vim $vim_args"
+    xstub "cmdline: $cmdline"
+    #$cmdline
+
+fi
 
 
