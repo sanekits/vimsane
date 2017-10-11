@@ -1,0 +1,8 @@
+.CONTROL
+
+architectures linux
+
+
+.DATA
+vimsane bin/vimsane
+
