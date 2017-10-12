@@ -17,69 +17,28 @@ function errExit {
    exit 1
 }
 
-function classifyExistingVimcfg {
-    if [[ -f ~/.vimrc ]] || [[ -h ~/.vimrc ]]; then 
-        echo "has_root_dotvimrc"
+function safeToInitVimrc {
+    if [[ -f ~/.vimrc ]] || [[ -h ~/.vimrc ]]; then  
+        prompt_flow "ERROR: Vimsane setup found ~/.vimrc.  This is not allowed.  If you want to keep it, do this:
+
+        1.  Rename your ~/.vimrc to something else. 
+        2.  Install vimsane
+        3.  Edit the new ~/.vim/vimrc that vimsane creates, and add your stuff to it.
+        "
+        false
         return
     fi
-    cd $HOME/.vim 2>/dev/null || { echo "no_dotvim"; return; }
+    if cd $HOME/.vim; then
+        prompt_flow "ERROR: Vimsane setup found an existing ~/.vim directory.  This is not allowed.  If you want to keep it:
 
-    local count=$(/bin/ls | /usr/bin/wc -l | /bin/grep -v vimrc)
-    if (( $count > 0 )); then
-         echo "has_dirty_dotvim"
-    fi
-
-}
-
-function safeToInitVimrc {
-    # Context: This is called when we're not sure if they have
-    # a vimrc yet.  Vimsane treats ~/.vim/vimrc as belonging to the
-    # user, we don't ever want to damage it.  We give it "last word"
-    # during startup, so we load it last and the user can override
-    # any of the defaults in Vimsane thereby.
-    #
-    # But, we disallow ~/.vimrc altogether.  We want them to keep
-    # .vim/vimrc as their canonical init file.  If they don't like
-    # that, they can't use Vimsane.
-    # 
-    # What we allow is one of the following starting conditions:
-    #
-    #    1.  Nothing -- no .vim, no .vim/vimrc
-    #    2.  Junk   -- .vim exists, but has nothing but editor state
-    #    3.  Ready  -- .vim/vimrc exists, and we'll preserve/tweak it
-    #
-    #    Any other condition is a fatal startup error.
-    #
-    # Goal: create ~/.vim/vimrc safely -- i.e. don't damage an existing
-    #    version.
-    #
-    # Goal #2: clearly advise the user if they're not doing what we need.
-
-    if [[ -f ~/.vimrc ]] || [[ -h ~/.vimrc ]]; then  # Goal #2
-        prompt_flow "Vimsane found ~/.vimrc.  This is not allowed.  If you want to keep it and use it with vimsane, you should place it in ~/.vim/vimrc as follows:
-
-            $  mkdir ~/.vim
-            $  cd ~/.vim
-            $  mv ~/.vimrc ./vimrc
-         "
-        errExit "Aborted at 0x201"
-    fi
-
-    if [[ -d ~/.vim ]]; then
-        prompt_flow "You have an existing ~/.vim directory"
-    fi
-
-    if  [[ -f ~/.vim/vimrc ]]; then
-        return # OK: there's a vimrc, and we won't step on it.
+        1. Rename ~/.vim to something else.
+        2. Install vimsane
+        3. Merge your stuff into the ~/.vim directory that vimsane creates.
+        "
+        false
+        return
     fi
     true
-#     mkdir -p $HOME/.vim &>/dev/null
-#     cd $HOME/.vim || errExit "Unable to cd to $HOME/.vim"
-#     cp $VimsaneCodeRoot/vimrc-raw-template ./vimrc || errExit "0x101"
-#     echo "We created a brand-new ~/.vim/vimrc for you, because you didn't have one."
-#     echo "When setup is done, you might want to look at it. That's how vim gets "
-#     echo "user customizations."
-#     read -p "Hit ENTER to continue."
 }
 
 if [[ -z $sourceMe ]]; then
