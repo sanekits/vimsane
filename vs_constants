@@ -1,8 +1,27 @@
 # vs_constants
 # :vim filetype=sh :
 
+function xstub {
+    echo "vimsane.xstub: $*" >&2
+}
+
+function prompt_flow {
+    # Prints msg to stderr with text flow, and
+    # then prints a prompt and waits for user reply.
+    # Reply is written to stdout.
+    local msg="$1"
+    local prompt="$2"
+
+    local cols=$(tput cols)
+    (( cols = $cols - 8 ))
+    echo "$msg" | fold -s -w $cols >&2
+    read -p "$prompt" 
+    echo $REPLY
+}
+
 export VimsaneVersion=3  # The current 'production' version of Vimsane
 export VimsaneUserVersion=0  # The current version installed for this user
 export VimsaneStateRoot="$HOME/.vimsane"
-export VimsaneCodeRoot=/bbsrc/training/vimsane
+[[ -z $VimsaneCodeRoot ]] && VimsaneCodeRoot=/bb/sys/package/v/vimsanepkg/current
+export VimsaneCodeRoot
 

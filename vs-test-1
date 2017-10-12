@@ -1,0 +1,7 @@
+#!/bin/bash
+# vs-test-1
+
+# Create a testshell and set it up to test non-deployed vimsane
+
+testshell --start-script /home/lmatheson4/vimsane/vs-bashrc-test-1  
+

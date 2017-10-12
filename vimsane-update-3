@@ -9,7 +9,7 @@
 #      $1: version currently installed [ '0' if not previously installed ]
 #      $2: target version.  Must be >= ThisVersion.
 
-source /bbsrc/training/vimsane/vs_constants
+source ${VimsaneCodeRoot}/vs_constants
 ThisVersion=3
 
 function errExit { 

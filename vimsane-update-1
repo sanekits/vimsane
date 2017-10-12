@@ -9,7 +9,7 @@
 #      $1: version currently installed [ '0' if not previously installed ]
 #      $2: target version.  Must be >= ThisVersion.
 
-source /bbsrc/training/vimsane/vs_constants
+source ${VimsaneCodeRoot}/vs_constants
 ThisVersion=1
 
 function errExit { 
@@ -17,7 +17,21 @@ function errExit {
    exit 1
 }
 
-function safeInitVimrc {
+function classifyExistingVimcfg {
+    if [[ -f ~/.vimrc ]] || [[ -h ~/.vimrc ]]; then 
+        echo "has_root_dotvimrc"
+        return
+    fi
+    cd $HOME/.vim 2>/dev/null || { echo "no_dotvim"; return; }
+
+    local count=$(/bin/ls | /usr/bin/wc -l | /bin/grep -v vimrc)
+    if (( $count > 0 )); then
+         echo "has_dirty_dotvim"
+    fi
+
+}
+
+function safeToInitVimrc {
     # Context: This is called when we're not sure if they have
     # a vimrc yet.  Vimsane treats ~/.vim/vimrc as belonging to the
     # user, we don't ever want to damage it.  We give it "last word"
@@ -27,33 +41,52 @@ function safeInitVimrc {
     # But, we disallow ~/.vimrc altogether.  We want them to keep
     # .vim/vimrc as their canonical init file.  If they don't like
     # that, they can't use Vimsane.
+    # 
+    # What we allow is one of the following starting conditions:
+    #
+    #    1.  Nothing -- no .vim, no .vim/vimrc
+    #    2.  Junk   -- .vim exists, but has nothing but editor state
+    #    3.  Ready  -- .vim/vimrc exists, and we'll preserve/tweak it
+    #
+    #    Any other condition is a fatal startup error.
     #
     # Goal: create ~/.vim/vimrc safely -- i.e. don't damage an existing
-    # version.
+    #    version.
     #
-    # Goal #2: if the user has a ~/.vimrc, abort -- that's not allowed.  
-    # We expect them to move their ~/.vimrc into ~/.vim/vimrc, and then 
-    # we'll be happy to help.
+    # Goal #2: clearly advise the user if they're not doing what we need.
 
     if [[ -f ~/.vimrc ]] || [[ -h ~/.vimrc ]]; then  # Goal #2
-        errExit "Vimsane found ~/.vimrc.  This is not allowed.  You should move it to ~/.vim/vimrc, or remove it, or just give up in despair. Vimsane is very careful to preserve your ~/.vim/vimrc, but won't play at all if you have ~/.vimrc."
+        prompt_flow "Vimsane found ~/.vimrc.  This is not allowed.  If you want to keep it and use it with vimsane, you should place it in ~/.vim/vimrc as follows:
+
+            $  mkdir ~/.vim
+            $  cd ~/.vim
+            $  mv ~/.vimrc ./vimrc
+         "
+        errExit "Aborted at 0x201"
+    fi
+
+    if [[ -d ~/.vim ]]; then
+        prompt_flow "You have an existing ~/.vim directory"
     fi
 
     if  [[ -f ~/.vim/vimrc ]]; then
         return # OK: there's a vimrc, and we won't step on it.
     fi
-    mkdir -p $HOME/.vim &>/dev/null
-    cd $HOME/.vim || errExit "Unable to cd to $HOME/.vim"
-    cp $VimsaneCodeRoot/vimrc-raw-template ./vimrc || errExit "0x101"
-    echo "We created a brand-new ~/.vim/vimrc for you, because you didn't have one."
-    echo "When setup is done, you might want to look at it. That's how vim gets "
-    echo "user customizations."
-    read -p "Hit ENTER to continue."
+    true
+#     mkdir -p $HOME/.vim &>/dev/null
+#     cd $HOME/.vim || errExit "Unable to cd to $HOME/.vim"
+#     cp $VimsaneCodeRoot/vimrc-raw-template ./vimrc || errExit "0x101"
+#     echo "We created a brand-new ~/.vim/vimrc for you, because you didn't have one."
+#     echo "When setup is done, you might want to look at it. That's how vim gets "
+#     echo "user customizations."
+#     read -p "Hit ENTER to continue."
 }
 
 if [[ -z $sourceMe ]]; then
-    safeInitVimrc
+    if ! safeToInitVimrc; then
+        exit 1
+    fi
     echo "Update to v$ThisVersion complete."
     true
 fi
-
+# vim: filetype=sh formatoptions=ocr :
