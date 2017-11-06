@@ -4,7 +4,7 @@
 #
 
 treqdrqs="drqs 108067799"  # A DRQS or TREQ associated with bpkg publication
-thisVersion="1.1"
+thisVersion="$(cat version)"
 
 bpkg_publish --ignore --version ${thisVersion} --${treqdrqs} --message "Updated vimsanepkg" ./vimsanepkg.pkgcfg
 

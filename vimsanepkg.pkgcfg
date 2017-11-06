@@ -5,4 +5,9 @@ architectures linux
 
 .DATA
 vimsane bin/vimsane
-
+vs_constants bin/trnkit/vimsane/vs_constants
+README.md bin/trnkit/vimsane/README.md
+vimsane-update-1 bin/trnkit/vimsane/vimsane-update-1
+vimsane-update-2 bin/trnkit/vimsane/vimsane-update-2
+vimsane-update-3 bin/trnkit/vimsane/vimsane-update-3
+buildinfo bin/trnkit/vimsane/buildinfo

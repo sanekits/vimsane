@@ -19,7 +19,7 @@
 #       So it's only done on demand, we never auto-update except if vimsane is
 #       not installed at all for the user.
 #
-#  Source: https://bbgithub.dev.bloomberg.com/training-domains/vimsane.git
+#  Source: https://bbgithub.dev.bloomberg.com/training-howtos/vimsane.git
 #
 
 [[ -z $VimsaneCodeRoot ]] && VimsaneCodeRoot=/bb/sys/package/v/vimsanepkg/current
