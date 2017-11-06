@@ -4,7 +4,7 @@
 #
 
 treqdrqs="drqs 108067799"  # A DRQS or TREQ associated with bpkg publication
-thisVersion="$(cat version)"
+thisVersion="$(cat bpkg-version)"
 
 function errExit {
     echo "ERROR: $*" >&2

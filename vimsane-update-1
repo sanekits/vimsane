@@ -28,7 +28,7 @@ function safeToInitVimrc {
         false
         return
     fi
-    if cd $HOME/.vim; then
+    if cd $HOME/.vim 2>/dev/null; then
         prompt_flow "ERROR: Vimsane setup found an existing ~/.vim directory.  This is not allowed.  If you want to keep it:
 
         1. Rename ~/.vim to something else.
