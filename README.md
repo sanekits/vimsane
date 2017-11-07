@@ -1,5 +1,5 @@
 # vimsane
-User-friendlier wrapper for vim, aimed at students.
+User-friendly-ish canned configuration for vim, aimed at students and new users.
 
 The 'vimsane' command auto-installs vimsane by doing just-in-time creation of the user's ~/.vim tree if it isn't there. 
 So you can tell a new user "run vimsane" and it's all automagic.
