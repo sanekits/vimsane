@@ -2,6 +2,10 @@
 # vimsane-update-1
 #
 # Updates a user's configuration to vimsane v2
+# 
+#   NOTE: v2 doesn't actually do anything meaningful, it just bumps the rev number
+#   in ~/.vimsane/version.  The reason it exists is for testing: you can set the
+#   version manually to 2 in order to run everything that comes after that.
 #
 # Args:  
 #      $1: version currently installed [ '0' if not previously installed ]
@@ -15,4 +19,5 @@ function errExit {
    exit 1
 }
 
-echo ""
+echo "Update to v$ThisVersion is complete."
+

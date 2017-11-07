@@ -2,10 +2,11 @@
 # This gets sourced from ~/.bashrc in testshell
 
 alias lr='ls -lirt'
+PATH=$PATH:/bb/bin
 function vimsane {
     (
         export VimsaneCodeRoot=~lmatheson4/vimsane
-        ~lmatheson4/vimsane/vimsane $*
+        ${VimsaneCodeRoot}/vimsane $*
     )
 }
 

@@ -45,7 +45,8 @@ if [[ -z $sourceMe ]]; then
     if ! safeToInitVimrc; then
         exit 1
     fi
-    echo "Update to v$ThisVersion complete."
+    echo "Update to v$ThisVersion is complete."
     true
 fi
 # vim: filetype=sh formatoptions=ocr :
+#

@@ -7,22 +7,27 @@
 # The general goal is to serve as a vim teaching tool and buffer the student
 # from some of the opaqueness of raw vim.
 #
-#  Usage: vimsane [options] [arguments-to-vim]
+#  Usage: vimsane [--update]
+#       
+#       By default, we check to see if vimsane is installed, and do nothing if
+#     it is. If not already installed, we'll run the installation steps up to
+#     the latest version in vs_constants.
 #
-#     Our options:
+#     If vimsane is installed, but not the latest version, we'll inform the user
+#     that an update is available if they supply the --update argument.
+# 
+#     --update:  allows the vimsane start script to update the user's existing
+#     vimsane configuration.  This involves pulling repos from from github into
+#     the user's ~/.vim local tree and possibly running init scripts.  We
+#     always preserve their ~/.vim/vimrc file, but might bring in new plugins
+#     or mappings or other things they've never seen before.  So it's only done
+#     on demand, we never auto-update an existing vimsane without being told to
+#     do so.
 #
-#     --update:  allows the vimsane start script to update the user's vim
-#       configuration.  This involves pulling a canonical source branch from
-#       bbgithub into the user's ~/.vim local repo and possibly running init
-#       scripts.  We always preserve their ~/.vim/vimrc file, but might bring
-#       in new plugins or mappings or other things they've never seen before.
-#       So it's only done on demand, we never auto-update except if vimsane is
-#       not installed at all for the user.
-#
-#  Source: https://bbgithub.dev.bloomberg.com/training-howtos/vimsane.git
+#  Source: https://bbgithub.dev.bloomberg.com/sanekits/vimsane.git
 #
 
-[[ -z $VimsaneCodeRoot ]] && VimsaneCodeRoot=/bb/sys/package/v/vimsanepkg/current
+[[ -z $VimsaneCodeRoot ]] && VimsaneCodeRoot=/bb/bin/trnkit/vimsane
 source ${VimsaneCodeRoot}/vs_constants
 
 do_update=false
@@ -65,7 +70,7 @@ manually fix the problem to recover (a.k.a. 'expert mode').
 
 Hit ENTER to continue, or Ctrl+C if we've frightened you away with this message." 
 
-    prompt_flow msg
+    prompt_flow "$msg"
 
 }
 
@@ -85,8 +90,8 @@ function initVimsane {
     if [[ ! -z $curVersion ]]; then
         VimsaneUserVersion=$curVersion
         if [[ "$curVersion" == "$VimsaneVersion" ]]; then
-            true  # We're all up-to-date
-            return
+            echo "Your Vimsane is already up-to-date (at v$VimsaneVersion)"
+            exit 0
         fi
     fi
     [[ -z $VimsaneUserVersion ]] && VimsaneUserVersion=0
@@ -94,20 +99,23 @@ function initVimsane {
     # do not force people to update unless they're at version 0.  We'll
     # alert and exit in the case of version < latest.
     if (( $VimsaneUserVersion > 0 )) && (( $VimsaneUserVersion <   $VimsaneVersion )); then
-        echo "An update to Vimsane is available, use 'vimsane --update' to get it."
-        return
+
+        # If they have not specified --update, then we'll alert them about that option:
+        if ! $do_update; then
+            echo "An update to Vimsane is available, use 'vimsane --update' to get it."
+            exit 1
+        fi
     fi
+    # Fall-through: this is either a fresh install, or an update is needed.
+}
+
+function do_update_now {
     # Do the update to bring them online:
     vimsaneUpdate $VimsaneUserVersion $VimsaneVersion
 }
 
-function do_update_now {
-    echo ""
-}
-
 if [[ -z $sourceMe ]]; then
 
-    vim_args=""  # We'll extract our args and build a list to pass on to vim
 
     while [[ ! -z $1 ]]; do
         case $1 in
@@ -115,7 +123,7 @@ if [[ -z $sourceMe ]]; then
                 do_update=true
                 ;;
             *)
-                vim_args="$vim_args $1"
+                errExit "Unknown argument: $1"
                 ;;
 
         esac
@@ -126,13 +134,9 @@ if [[ -z $sourceMe ]]; then
 
     if $do_update; then
         prompt_update_permission
-        do_update_now
     fi
 
-    xstub "vimsane version $VimsaneVersion"
-    cmdline="vim $vim_args"
-    xstub "cmdline: $cmdline"
-    #$cmdline
+    do_update_now
 
 fi
 
