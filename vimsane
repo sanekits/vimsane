@@ -137,6 +137,8 @@ if [[ -z $sourceMe ]]; then
     fi
 
     do_update_now
+    
+    echo "Install complete."
 
 fi
 

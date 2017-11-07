@@ -33,6 +33,7 @@ templ="template-vimrc-vimsane-1"  # Our initial vimrc for a new user
 echo "Creating ~/.vim/vimrc from ${templ}:"
 /bin/cp $templ vimrc || errExit "Step3.0x92452"
 
+
 echo "Update to v$ThisVersion is complete."
 
 
