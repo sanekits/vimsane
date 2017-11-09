@@ -4,7 +4,7 @@ Vimsane is a user-friendly-ish canned configuration for vim, aimed at students a
 ## This repository is just the installer:
 The 'vimsane' command is on the user's PATH already, and it auto-installs vimsane by doing just-in-time creation of the user's ~/.vim tree if it isn't there. So you can tell a new user "run vimsane" and setup is safe and automagic.
 
-If you have an existing  ~/.vim tree or ~/.vimrc that you value, vimsane will not touch it unless you do "vimsane --update".  
+If you have an existing  ~/.vim tree or ~/.vimrc that you value, vimsane will not touch it.  
 
 ## The actual vim config stuff is in the public Github:
 See https://github.com/sanekits/vimsane-cfg
