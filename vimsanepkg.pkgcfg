@@ -14,4 +14,3 @@ buildinfo       bin/trnkit/vimsane/buildinfo
 _vs_hello.vim            bin/trnkit/vimsane/_vs_hello.vim
 template-vimrc-vimsane-1 bin/trnkit/vimsane/template-vimrc-vimsane-1
 vs-hello-world.cpp       bin/trnkit/vimsane/vs-hello-world.cpp
-vs_constants             bin/trnkit/vimsane/vs_constants

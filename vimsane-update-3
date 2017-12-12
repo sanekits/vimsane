@@ -24,10 +24,16 @@ function usingGoodVim {
 
 If vim doesn't work right or you get lots of error messages, then you're probably running an old version of vim.
 
-What you can do about this problem:
+Things you can try to solve this problem, in order of preference:
+
     1.  Ensure that the line '+ contrib/optbb' is present in your ~/.bbprofile
+
     2.  Check your system PATH (i.e. 'echo \$PATH') and ensure that 
         /opt/bb/bin is listed *before* $(dirname $(which vim)).
+
+    3. Add an alias in your shell startup file (~/.bashrc, ~/.kshrc, or ~/.profile):
+
+            alias vim='/opt/bb/bin/vim'
 
 Your vimsane installation isn't broken, but if you run an old vim things will probably not work well.
 
