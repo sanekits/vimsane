@@ -3,5 +3,5 @@
 
 # Create a testshell and set it up to test non-deployed vimsane
 
-testshell --start-script /home/lmatheson4/vimsane/vs-bashrc-test-1  
+testshell --ksh --start-script /home/lmatheson4/vimsane/vs-bashrc-test-1  
 

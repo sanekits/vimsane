@@ -19,21 +19,27 @@ function errExit {
 
 function safeToInitVimrc {
     if [[ -f ~/.vimrc ]] || [[ -h ~/.vimrc ]]; then  
-        prompt_flow "ERROR: Vimsane setup found ~/.vimrc.  This is not allowed.  If you want to keep it, do this:
+        prompt_flow "
+        ERROR: I found a file or symlink named '~/.vimrc' -- this is not allowed.  If you want to keep it, do this:
 
-        1.  Rename your ~/.vimrc to something else. 
-        2.  Install vimsane
-        3.  Edit the new ~/.vim/vimrc that vimsane creates, and add your stuff to it.
+        1. Rename your ~/.vimrc to something else. 
+        2. Restart the vimsane installation
+        3. Edit the new ~/.vim/vimrc that vimsane will create, and add your stuff to the end of it.
+
+        If you don't want to keep it, delete it and start over.
         "
         false
         return
     fi
     if cd $HOME/.vim 2>/dev/null; then
-        prompt_flow "ERROR: Vimsane setup found an existing ~/.vim directory.  This is not allowed.  If you want to keep it:
+        prompt_flow "
+        ERROR: I found a directory named '~/.vim' -- this is not allowed.  If you want to keep it:
 
         1. Rename ~/.vim to something else.
-        2. Install vimsane
-        3. Merge your stuff into the ~/.vim directory that vimsane creates.
+        2. Restart the vimsane installation
+        3. Merge your stuff manually into the ~/.vim directory that vimsane creates.
+
+        If you don't want to keep your ~/.vim dir and its contents, delete it and start over (e.g. with 'rm -rf ~/.vim')
         "
         false
         return

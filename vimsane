@@ -138,7 +138,7 @@ if [[ -z $sourceMe ]]; then
 
     do_update_now
     
-    echo "Install complete."
+    echo "Vimsane install/update completed."
 
 fi
 

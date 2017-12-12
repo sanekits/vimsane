@@ -20,19 +20,46 @@ function errExit {
 
 cd ${HOME}
 [[ -d $HOME/.vim ]] && errExit ".vim already exists, vimsane-update-3 failed."
-vs_github_clone "sanekits/vimsane-cfg" .vim || exit 1
-
-cd ~/.vim || errExit "Step3.0x011189"
-
-templ="template-vimrc-vimsane-1"  # Our initial vimrc for a new user
-
 [[ -f vimrc ]] && errExit "Unexpected $VIM/vimrc was found.  Please rename this and move it out of ~/.vim"
 
 [[ -f .vimrc ]] && errExit "Unexpected $VIM/.vimrc was found.  Please rename this and move it out of ~/.vim"
 
+vs_github_clone "sanekits/vimsane-cfg" .vim || exit 1
+
+# Vim likes a .vimtmp to save backups, etc:
+mkdir -p $HOME/.vimtmp &>/dev/null
+
+cd ~/.vim || errExit "Step3.0x011189"
+
+vs_github_clone "VundleVim/Vundle.vim" || exit 1
+
+templ="template-vimrc-vimsane-1"  # Our initial vimrc for a new user
+
+
 echo "Creating ~/.vim/vimrc from ${templ}:"
 /bin/cp $templ vimrc || errExit "Step3.0x92452"
 
+# We need symlink for plugins:
+ln -s load-vimsane-plugins.vim load-plugins.vim
+
+
+prompt_flow "
+========= Plugin Installation =================
+We will now launch vim in automatic mode and install plugins from github.  Please allow the process to complete, it will exit when done.  If a problem occurs, you can manually re-try at any time by running vim and invoking ':PluginInstall', reviewing errors and researching problems.
+
+Press ENTER to continue:"
+
+# Now we have Vundle installed in ~/.vim/Vundle.vim, and our startup config stuff is ready
+# to install the rest of the plugins.  To do that, we invoke vundle's auto-installer.  This
+# is a bit tricky, because we need to launch vim, have it invoke PluginInstall, in an environment
+# where we're telling git how to deal with the Bloomberg dev proxy. 
+# We're jumping through these hoops so that we don't modify the user's ~/.gitconfig proxy setup.  We
+# don't want that responsibility:
+GIT_SSL_NO_VERIFY=true https_proxy="http://$(whoami)@${github_proxy}" vim +PluginInstall +qall
+
+if [[ $? != 0 ]]; then 
+    prompt_flow 'ERROR installing one or more vim plugins. It probably works, but something is not good here. You should run vim manually and do ":PluginInstall", then sort out any errors that occur.'
+fi
 
 echo "Update to v$ThisVersion is complete."
 
