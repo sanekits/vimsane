@@ -47,10 +47,18 @@ function safeToInitVimrc {
     true
 }
 
+
 if [[ -z $sourceMe ]]; then
+
+    if [[ ! -x /opt/bb/bin/vim ]]; then
+        errExit "Can't find /opt/bb/bin/vim.  This machine just isn't up to vimsane's fine standards. Try njlxdev* or nylxdev*"
+    fi
+     # Make sure we're on the right vim
+
     if ! safeToInitVimrc; then
         exit 1
     fi
+
     echo "Update to v$ThisVersion is complete."
     true
 fi
