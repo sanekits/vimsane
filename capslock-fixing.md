@@ -15,3 +15,4 @@ problem using `uncap.exe`:
 1. Edit the `Name` field. *(You can call it whatever you like, "uncap" is suggested)*
 1. Double-click the new entry you created, and paste this into the Value data: 
 `u:\lmatheson4\uncap.exe 0x14:0xa2`
+1. Log off Windows and log in again.
