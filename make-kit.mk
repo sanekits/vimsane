@@ -13,6 +13,15 @@ kit_depends := \
 
 .PHONY: publish publish-draft
 
+VimsaneCfgDeps := $(shell cd vimsane-cfg && git ls-files | sed 's,^,vimsane-cfg/,')
+
+bin/vimsane-cfg.tgz: $(VimsaneCfgDeps)
+	tar -czvf $@ $(VimsaneCfgDeps)
+
+tree-setup: .pull-vimsane-cfg bin/vimsane-cfg.tgz
+
+.pull-vimsane-cfg:
+	cd vimsane-cfg && git pull
 
 publish: pre-publish publish-common release-upload release-list
 	cat tmp/draft-url

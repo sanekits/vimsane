@@ -34,10 +34,26 @@ die() {
 main() {
     Script=${scriptName} main_base "$@"
     builtin cd ${HOME}/.local/bin || die 208
-    # TODO: kit-specific steps can be added here
 
+    which git &>/dev/null || die "git not installed or not on PATH"
 
+    tarfile=${PWD}/vimsane/vimsane-cfg.tgz
+    tmp_d=$(mktemp -d);
+    pushd ${tmp_d} &>/dev/null || die 31
+    trap '[[ -d ${tmp_d} ]] && rm -rf ${tmp_d}' exit
+    tar -xvzf ${tarfile} || die 32
+    mkdir -p ${HOME}/.vim ${HOME}/.vimtmp
+    cd ${HOME}/.vim || die 209
+    cp -ru ${tmp_d}/vimsane-cfg/. ./ || die 210
+    [[ -d Vundle.vim/.git ]] || {
+        git clone "https://github.com/VundleVim/Vundle.vim.git" || die 211
+    }
+    ln -sf load-lmath-plugins.vim load-plugins.vim
+    ln -sf lmath-vimrc.vim vimrc
 
+    VIMHOME=${PWD} vim +PluginInstall +qall
+
+    popd &>/dev/null
 
     # FINALIZE: perms on ~/.local/bin/vimsane.  We want others/group to be
     # able to traverse dirs and exec scripts, so that a source installation can

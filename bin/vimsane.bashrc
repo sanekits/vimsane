@@ -4,8 +4,8 @@ vimsane-semaphore() {
     [[ 1 -eq  1 ]]
 }
 
-do-vimsane() {
-    # TODO: This is a test function.  You can discard it.
-    vimsane.sh
+command -v vim &>/dev/null || {
+    vim() {
+        command vi "$@"
+    }
 }
-
