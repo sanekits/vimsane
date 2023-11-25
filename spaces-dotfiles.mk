@@ -3,4 +3,6 @@ SHELL=/bin/bash
 .ONESHELL:
 .SUFFIXES:
 
-make setup
+setup:
+	@set -ue
+	make -f Makefile setup
