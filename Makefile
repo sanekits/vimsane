@@ -55,7 +55,8 @@ $(HOME)/.vim/.init:
 
 $(Flag)/plugins-installed:
 	@set -ue
-	VIMHOME=$(HOME)/.vim $(HOME)/.local/bin/vim +PluginInstall +qall
+	bash -lic 'VIMHOME=$(HOME)/.vim command vim +PluginInstall +qall'
+	VIMHOME=$(HOME)/.vim vim +PluginInstall +qall
 	touch $@
 
 
