@@ -26,7 +26,7 @@ $(Flag)/.init:
 $(Flag)/vim-installed:
 	@set -ue
 	which vim &>/dev/null || {
-		apt-get install vim 
+		apt-get install -y vim 
 	}
 	bash -lic 'command vim --version &>/dev/null'  || exit 19
 	touch $@
