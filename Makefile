@@ -25,12 +25,10 @@ $(Flag)/.init:
 
 $(Flag)/vim-installed:
 	@set -ue
-	which vi &>/dev/null || { echo ERROR vim not installed &>2; exit 19; }
-	set -x
-	command vim --version &>/dev/null || {
-		mkdir -p $(HOME)/.local/bin
-		ln -sf $$(which vi | head -n 1) $(HOME)/.local/bin/vim
+	which vim &>/dev/null || {
+		apt-get install vim 
 	}
+	bash -lic 'command vim --version &>/dev/null'  || exit 19
 	touch $@
 
 $(HOME)/.vim/vimrc: $(HOME)/.vim/.init $(Flag)/vundlevim
