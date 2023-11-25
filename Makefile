@@ -36,6 +36,7 @@ $(Flag)/vim-installed:
 $(HOME)/.vim/vimrc: $(HOME)/.vim/.init $(Flag)/vundlevim
 	@set -ue
 	cd $(@D)
+	mkdir -p $(HOME)/.vimtmp
 	ln -sf load-lmath-plugins.vim load-plugins.vim
 	ln -sf lmath-vimrc.vim vimrc
 
