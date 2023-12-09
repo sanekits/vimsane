@@ -61,7 +61,10 @@ $(Flag)/plugins-installed:
 
 $(Flag)/EDITOR-defined:
 	@ # We expect EDITOR=vim instead of vi
-	bash -ic 'echo $$EDITOR' | grep -q vim && exit 0 || :
+	bash -ic 'echo $$EDITOR' | grep -q vim && {
+		touch $@
+		exit 0
+	} || :
 	echo 'EDITOR=vim # Added by vimsane/Makefile target $@' >> $(HOME)/.bashrc
 	touch $@
 
