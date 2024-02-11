@@ -45,14 +45,14 @@ $(HOME)/.vim/vimrc: $(HOME)/.vim/.init $(Flag)/vundlevim
 $(Flag)/vundlevim:
 	@
 	cd $(HOME)/.vim
-	git clone bbgithub:sanekits/Vundle.vim -o bbsane
+	git clone github:sanekits/Vundle.vim -o sane
 	touch $@
 
 
 $(HOME)/.vim/.init:
 	@
 	cd $(HOME)
-	git clone bbgithub:sanekits/vimsane-cfg .vim
+	git clone github:sanekits/vimsane-cfg .vim
 	touch $@
 
 $(Flag)/plugins-installed:
@@ -73,10 +73,11 @@ $(Flag)/EDITOR-defined:
 
 setup: \
 	$(Flag)/.init \
-	$(Flag)/vim-installed \
 	$(HOME)/.vim/vimrc \
 	$(Flag)/plugins-installed \
-	$(Flag)/EDITOR-defined
+	$(Flag)/EDITOR-defined \
+	| $(Flag)/vim-installed
+
 
 clean:
 	@
