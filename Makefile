@@ -9,6 +9,8 @@ Remake = make $(MAKEFLAGS) -f $(realpath $(lastword $(MAKEFILE_LIST)))
 absdir := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 Flag = $(HOME)/.flag-vimsane
 
+Vim=$(shell which vim)
+
 Config:
 	@
 	cat <<-EOF
@@ -31,7 +33,7 @@ $(Flag)/vim-installed:
 	which vim &>/dev/null || {
 		apt-get install -y vim
 	}
-	bash -lic 'command vim --version &>/dev/null '  || exit 19
+	bash -lic 'command $(Vim) --version &>/dev/null '  || exit 19
 	touch $@
 
 $(HOME)/.vim/vimrc: $(HOME)/.vim/.init $(Flag)/vundlevim
@@ -45,20 +47,20 @@ $(HOME)/.vim/vimrc: $(HOME)/.vim/.init $(Flag)/vundlevim
 $(Flag)/vundlevim:
 	@
 	cd $(HOME)/.vim
-	git clone github:sanekits/Vundle.vim -o sane
+	git clone https://github.com/sanekits/Vundle.vim -o sane
 	touch $@
 
 
 $(HOME)/.vim/.init:
 	@
 	cd $(HOME)
-	git clone github:sanekits/vimsane-cfg .vim
+	git clone https://github.com/sanekits/vimsane-cfg .vim
 	touch $@
 
 $(Flag)/plugins-installed:
 	@
-	bash -ic 'VIMHOME=$(HOME)/.vim command vim +PluginInstall +qall; exit'
-	VIMHOME=$(HOME)/.vim vim +PluginInstall +qall
+	bash -ic 'VIMHOME=$(HOME)/.vim command $(Vim) +PluginInstall +qall; exit'
+	VIMHOME=$(HOME)/.vim $(Vim) +PluginInstall +qall
 	touch $@
 
 $(Flag)/EDITOR-defined:
@@ -67,7 +69,7 @@ $(Flag)/EDITOR-defined:
 		touch $@
 		exit 0
 	} || :
-	echo 'EDITOR=vim # Added by vimsane/Makefile target $@' >> $(HOME)/.bashrc
+	echo 'EDITOR=$(Vim) # Added by vimsane/Makefile target $@' >> $(HOME)/.bashrc
 	touch $@
 
 
