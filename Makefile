@@ -13,6 +13,8 @@ Config:
 	@
 	cat <<-EOF
 	absdir=$(absdir)
+	Flag=$(Flag)
+	Flags="$$(ls $(Flag) 2>/dev/null | tr  '\n' ' ')"
 	EOF
 
 setup:
