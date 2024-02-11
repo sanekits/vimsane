@@ -31,7 +31,7 @@ $(Flag)/vim-installed:
 	which vim &>/dev/null || {
 		apt-get install -y vim
 	}
-	bash -lic 'command vim --version &>/dev/null'  || exit 19
+	bash -lic 'command vim --version &>/dev/null '  || exit 19
 	touch $@
 
 $(HOME)/.vim/vimrc: $(HOME)/.vim/.init $(Flag)/vundlevim
@@ -57,7 +57,7 @@ $(HOME)/.vim/.init:
 
 $(Flag)/plugins-installed:
 	@
-	bash -lic 'VIMHOME=$(HOME)/.vim command vim +PluginInstall +qall'
+	bash -ic 'VIMHOME=$(HOME)/.vim command vim +PluginInstall +qall; exit'
 	VIMHOME=$(HOME)/.vim vim +PluginInstall +qall
 	touch $@
 
