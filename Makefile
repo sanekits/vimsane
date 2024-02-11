@@ -33,10 +33,10 @@ $(Flag)/vim-installed:
 	which vim &>/dev/null || {
 		apt-get install -y vim
 	}
-	bash -lic 'command $(Vim) --version &>/dev/null '  || exit 19
+	bash -lic '$$(which vim) --version &>/dev/null '  || exit 19
 	touch $@
 
-$(HOME)/.vim/vimrc: $(HOME)/.vim/.init $(Flag)/vundlevim
+$(HOME)/.vim/vimrc: $(HOME)/.vim/.init $(Flag)/vundlevim | $(Flag)/vim-installed
 	@
 	cd $(@D)
 	mkdir -p $(HOME)/.vimtmp
@@ -57,13 +57,13 @@ $(HOME)/.vim/.init:
 	git clone https://github.com/sanekits/vimsane-cfg .vim
 	touch $@
 
-$(Flag)/plugins-installed:
+$(Flag)/plugins-installed: | $(Flag)/vim-installed
 	@
 	bash -ic 'VIMHOME=$(HOME)/.vim command $(Vim) +PluginInstall +qall; exit'
 	VIMHOME=$(HOME)/.vim $(Vim) +PluginInstall +qall
 	touch $@
 
-$(Flag)/EDITOR-defined:
+$(Flag)/EDITOR-defined: | $(Flag)/vim-installed
 	@ # We expect EDITOR=vim instead of vi
 	bash -ic 'echo $$EDITOR' | grep -q vim && {
 		touch $@
